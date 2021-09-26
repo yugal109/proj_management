@@ -1,11 +1,11 @@
 "use strict";
-exports.__esModule = true;
-var jwtt = require("jsonwebtoken");
+Object.defineProperty(exports, "__esModule", { value: true });
+const jwtt = require("jsonwebtoken");
 require("dotenv").config();
-var auth = function (req, res, next) {
-    var token = req.header("x-auth-token");
+const auth = (req, res, next) => {
+    const token = req.header("x-auth-token");
     try {
-        var decoded = jwtt.verify(token, process.env.SECRET_KEY);
+        const decoded = jwtt.verify(token, process.env.SECRET_KEY);
         req.user = decoded;
         next();
     }

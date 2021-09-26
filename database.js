@@ -1,11 +1,10 @@
 "use strict";
-var Pool = require("pg").Pool;
+const { Pool } = require("pg");
 require("dotenv").config();
-const connectionString=process.env.DATABASE_URL
+const connectionString = process.env.DATABASE_URL;
 try {
-    var pool = new Pool({
+    const pool = new Pool({
         connectionString
-    
     });
     console.log("Successfully connected to database");
     module.exports = pool;

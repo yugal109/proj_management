@@ -1,8 +1,8 @@
 "use strict";
-var jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 require("dotenv").config;
-var createToken = function (id) {
-    var token = jwt.sign({ id: id }, process.env.SECRET_KEY);
+const createToken = (id) => {
+    const token = jwt.sign({ id: id }, process.env.SECRET_KEY);
     return token;
 };
 module.exports = createToken;
