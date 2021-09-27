@@ -18,24 +18,10 @@ const pool = require("../database");
 const bcrypt = require("bcryptjs");
 const createToken = require("../utility/createToken");
 const auth = require("../utility/auth");
-const redis = require("redis");
-const util = require("util");
-const redisURL = process.env.REDISTOGO_URL;
-const client = redis.createClient(redisURL);
-client.set = util.promisify(client.set);
-client.get = util.promisify(client.get);
 router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const usersRedis = yield client.get("users");
-        if (usersRedis) {
-            const users = yield JSON.parse(usersRedis);
-            res.send(users);
-        }
-        else {
-            const users = yield pool.query("SELECT id,username,email FROM Users");
-            yield client.set("users", JSON.stringify(users.rows));
-            res.send(users.rows);
-        }
+        const users = yield pool.query("SELECT id,username,email FROM Users");
+        res.send(users.rows);
     }
     catch (error) {
         console.log(error);
