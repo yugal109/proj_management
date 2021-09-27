@@ -2,7 +2,7 @@
   "name": "practise",
   "engines": {
     "node": "12.21.0",
-    "npm":"7.5.0"
+    "npm": "7.5.0"
   },
   "version": "1.0.0",
   "description": "",
@@ -23,6 +23,7 @@
     "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.13",
     "pg": "^8.7.1",
+    "redis": "^3.1.2",
     "ts-node": "^10.2.1",
     "typeorm": "^0.2.37",
     "typescript": "^4.4.3"
