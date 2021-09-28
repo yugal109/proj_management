@@ -16,7 +16,9 @@ const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const bcrypt = require("bcryptjs");
 const createToken = require("../utility/createToken");
+const google_auth_library_1 = require("google-auth-library");
 const pool = require("../database");
+const client = new google_auth_library_1.OAuth2Client(process.env.CLIENT_ID);
 router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     try {
@@ -36,6 +38,46 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         else {
             res.status(404).send({ message: "Wrong username or password." });
         }
+    }
+    catch (error) {
+        console.log(error);
+    }
+}));
+router.post("/google", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { tokenId } = req.body;
+        console.log(tokenId);
+        client
+            .verifyIdToken({ idToken: tokenId, audience: process.env.CLIENT_ID })
+            .then((response) => __awaiter(void 0, void 0, void 0, function* () {
+            const { email_verified, name, email } = response.payload;
+            if (email_verified) {
+                const user = yield pool.query("SELECT * FROM Users WHERE email=$1", [
+                    email,
+                ]);
+                if (user.rows.length === 0) {
+                    const salt = yield bcrypt.genSalt(10);
+                    const joinedPass = email + process.env.SECRET_KEY_FOR_LOGIN;
+                    const password = yield bcrypt.hash(joinedPass, salt);
+                    try {
+                        const user = yield pool.query("INSERT INTO Users (username,email,password) VALUES ($1,$2,$3) RETURNING *", [name, email, password]);
+                        const token = createToken(user.rows[0].id);
+                        res.send({ token });
+                    }
+                    catch (error) {
+                        console.log(error);
+                    }
+                }
+                else {
+                    const token = createToken(user.rows[0].id);
+                    res.send({ token });
+                }
+            }
+        }))
+            .catch((error) => {
+            console.log(error);
+            res.send(error);
+        });
     }
     catch (error) {
         console.log(error);
