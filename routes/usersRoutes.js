@@ -43,12 +43,13 @@ router.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const id = req.params.id;
         client.get(`user-${id}`, (error, user) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log(error);
             if (user !== null) {
                 res.send(JSON.parse(user));
             }
             else {
                 const user = yield pool.query("SELECT id,username,email FROM Users WHERE id=$1 ", [id]);
-                client.set(`user-${user.id}`, TIME, user.rows[0]);
+                client.set(`user-${user.rows[0].id}`, JSON.stringify(user.rows[0]));
                 res.send(user.rows[0]);
             }
         }));
