@@ -29,10 +29,10 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const passwordCorrect = yield bcrypt.compare(password, user.rows[0].password);
             if (passwordCorrect) {
                 const token = createToken(user.rows[0].id);
-                res.send({ token });
+                res.send({ token, id: user.rows[0].id });
             }
             else {
-                res.status(404).send({ message: "Wrong username or password." });
+                res.send({ message: "Wrong username or password." });
             }
         }
         else {
@@ -70,7 +70,7 @@ router.post("/google", (req, res) => __awaiter(void 0, void 0, void 0, function*
                 }
                 else {
                     const token = createToken(user.rows[0].id);
-                    res.send({ token });
+                    res.send({ token, id: user.rows[0].id });
                 }
             }
         }))
