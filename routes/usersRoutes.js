@@ -43,7 +43,7 @@ router.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const id = req.params.id;
         client.get(`user-${id}`, (error, user) => __awaiter(void 0, void 0, void 0, function* () {
-            console.log(error);
+            // console.log(error)
             if (user !== null) {
                 res.send(JSON.parse(user));
             }
