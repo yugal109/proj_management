@@ -17,20 +17,41 @@ const router = express_1.default.Router();
 const pool = require("../database");
 const bcrypt = require("bcryptjs");
 const createToken = require("../utility/createToken");
+const redis = require("redis");
 const auth = require("../utility/auth");
-router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const users = yield pool.query("SELECT id,username,email FROM Users");
-        res.send(users.rows);
-    }
-    catch (error) {
-        console.log(error);
-    }
-}));
+const util = require("util");
+const client = require("../utility/redisConnection");
+// util.promisify(client.get).bind(client);
+// util.promisify(client.set).bind(client);
+const TIME = 3600;
+// router.get("/", async (req: Request, res: Response) => {
+//   try {
+//    client.get("users",async (error:any,users:any)=>{
+//     if(users!=null){
+//       res.send(JSON.parse(users));
+//     }else{
+//       const users = await pool.query("SELECT id,username,email FROM Users");
+//       client.set("users", JSON.stringify(users.rows));
+//       res.send(users.rows );
+//     }
+//    });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
 router.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const user = yield pool.query("SELECT id,username,email FROM Users WHERE id=$1 ", [req.params.id]);
-        res.send(user.rows[0]);
+        const id = req.params.id;
+        client.get(`user-${id}`, (error, user) => __awaiter(void 0, void 0, void 0, function* () {
+            if (user !== null) {
+                res.send(JSON.parse(user));
+            }
+            else {
+                const user = yield pool.query("SELECT id,username,email FROM Users WHERE id=$1 ", [id]);
+                client.set(`user-${user.id}`, TIME, user.rows[0]);
+                res.send(user.rows[0]);
+            }
+        }));
     }
     catch (error) {
         console.log(error);
